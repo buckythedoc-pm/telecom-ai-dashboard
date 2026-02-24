@@ -90,7 +90,7 @@ with tab1:
 
     total_customers = df["customer_id"].nunique()
     high_priority = df[df["priority"] == "high"].shape[0]
-    avg_churn = round(df["churn_risk"].mean(), 2)
+    avg_churn = round(df["churn_risk_score"].mean(), 2)
     negative_sentiment = df[df["sentiment"] < 0].shape[0]
 
     col1, col2, col3, col4 = st.columns(4)
@@ -113,7 +113,7 @@ with tab1:
     fig3 = px.scatter(
         df,
         x="sentiment",
-        y="churn_risk",
+        y="churn_risk_score",
         color="priority",
         title="Churn vs Sentiment"
     )
@@ -138,7 +138,7 @@ with tab2:
 
     col1, col2, col3, col4 = st.columns(4)
 
-    col1.metric("Churn Risk", round(filtered_df["churn_risk"], 2))
+    col1.metric("Churn Risk", round(filtered_df["churn_risk_score"], 2))
     col2.metric("Sentiment", round(filtered_df["sentiment"], 2))
     col3.metric("Priority", filtered_df["priority"])
     col4.metric("Confidence", filtered_df["confidence_score"])
@@ -176,9 +176,9 @@ with tab3:
     fig2 = px.scatter(
         df,
         x="sentiment",
-        y="churn_risk",
+        y="churn_risk_score",
         color="priority",
-        size="churn_risk",
+        size="churn_risk_score",
         title="Churn vs Sentiment Relationship"
     )
 
@@ -198,7 +198,7 @@ with tab3:
 
     if st.button("Generate Retention Strategy"):
 
-        churn = customer_data["churn_risk"]
+        churn = customer_data["churn_risk_score"]
         sentiment = customer_data["sentiment"]
 
         if churn > 0.75:
