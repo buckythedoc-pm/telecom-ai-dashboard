@@ -1,0 +1,4 @@
+customer_id,churn_score,sentiment,sentiment_score,intent,priority,summary,retention_action
+C001,78,Negative,-0.6,Network Issue,High,"Customer facing frequent signal drops","Offer 20% discount and technical visit"
+C002,32,Neutral,0.1,Billing Query,Low,"Customer confused about bill charges","Provide bill explanation"
+C003,85,Negative,-0.8,Slow Internet,High,"Customer experiencing slow speed","Upgrade to premium plan with discount"
