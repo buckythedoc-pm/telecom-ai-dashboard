@@ -5,8 +5,24 @@ import psycopg2
 
 st.set_page_config(page_title="Telecom AI Dashboard", layout="wide")
 
+# ======================
+# UI POLISH
+# ======================
+
+st.markdown("""
+<style>
+.block-container {
+    padding-top: 2rem;
+}
+</style>
+""", unsafe_allow_html=True)
+
 st.title("📡 Telecom Customer 360 — AI Insights")
 
+
+# =========================
+# LOAD DATA FROM SUPABASE
+# =========================
 
 @st.cache_data(ttl=600)
 def load_data():
@@ -62,6 +78,7 @@ def load_data():
 
     conn.close()
 
+    # Fix numeric columns
     numeric_cols = [
         "churn_risk_score",
         "sentiment",
@@ -77,8 +94,34 @@ def load_data():
     return df
 
 
+# Load data
 df = load_data()
 
+
+# ======================
+# GLOBAL ALERTS
+# ======================
+
+high_churn_df = df[df["churn_risk_score"] > 0.75]
+
+if not high_churn_df.empty:
+
+    st.error(
+        f"🚨 {len(high_churn_df)} HIGH RISK customers detected — Immediate retention action required"
+    )
+
+    with st.expander("View High Risk Customers"):
+
+        alert_table = high_churn_df[
+            ["customer_id", "churn_risk_score", "priority", "retention_action"]
+        ].sort_values(by="churn_risk_score", ascending=False)
+
+        st.dataframe(alert_table, use_container_width=True)
+
+
+# ======================
+# TABS
+# ======================
 
 tab1, tab2, tab3 = st.tabs([
     "📊 Executive Dashboard",
@@ -86,6 +129,10 @@ tab1, tab2, tab3 = st.tabs([
     "🤖 AI Insights"
 ])
 
+
+# ======================
+# TAB 1 — EXECUTIVE
+# ======================
 
 with tab1:
 
@@ -98,10 +145,10 @@ with tab1:
 
     col1, col2, col3, col4 = st.columns(4)
 
-    col1.metric("Total Customers", total_customers)
-    col2.metric("High Priority Customers", high_priority)
-    col3.metric("Avg Churn Risk", avg_churn)
-    col4.metric("Negative Sentiment Cases", negative_sentiment)
+    col1.metric("👥 Total Customers", total_customers)
+    col2.metric("🔥 High Priority", high_priority)
+    col3.metric("📉 Avg Churn Risk", avg_churn)
+    col4.metric("😠 Negative Sentiment", negative_sentiment)
 
     st.divider()
 
@@ -123,6 +170,18 @@ with tab1:
 
     st.plotly_chart(fig3, use_container_width=True)
 
+    st.subheader("Customer Risk Overview")
+
+    table_df = df[
+        ["customer_id", "churn_risk_score", "priority", "department"]
+    ].sort_values(by="churn_risk_score", ascending=False)
+
+    st.dataframe(table_df, use_container_width=True)
+
+
+# ======================
+# TAB 2 — CUSTOMER 360
+# ======================
 
 with tab2:
 
@@ -139,20 +198,33 @@ with tab2:
 
     col1.metric("Churn Risk", round(customer_data["churn_risk_score"], 2))
     col2.metric("Sentiment", round(customer_data["sentiment"], 2))
-    col3.metric("Priority", customer_data["priority"])
     col4.metric("Confidence", customer_data["confidence_score"])
+
+    # Priority badge
+    priority = str(customer_data["priority"]).lower()
+
+    if priority == "high":
+        st.markdown("### 🔴 Priority: HIGH")
+    elif priority == "medium":
+        st.markdown("### 🟠 Priority: MEDIUM")
+    else:
+        st.markdown("### 🟢 Priority: LOW")
 
     st.divider()
 
     st.subheader("Churn Reason")
     st.info(customer_data["churn_reason"])
 
-    st.subheader("Retention Recommendation")
+    st.subheader("🤖 AI Recommended Action")
     st.success(customer_data["retention_action"])
 
     st.subheader("Department Handling")
     st.write(customer_data["department"])
 
+
+# ======================
+# TAB 3 — AI INSIGHTS
+# ======================
 
 with tab3:
 
@@ -214,4 +286,3 @@ with tab3:
 
         st.success(recommendation)
         st.info(explanation)
-
