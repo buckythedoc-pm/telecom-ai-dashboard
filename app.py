@@ -65,12 +65,6 @@ def load_data():
 
 df = load_data()
 
-# ✅ RELOAD BUTTON (OUTSIDE FUNCTION)
-if st.button("Reload Data"):
-    st.cache_data.clear()
-    st.rerun()
-
-
 # ======================
 # TABS
 # ======================
