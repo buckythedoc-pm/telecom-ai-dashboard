@@ -13,10 +13,6 @@ st.title("📡 Telecom Customer 360 — AI Insights")
 
 @st.cache_data
 def load_data():
-if st.button("Reload Data"):
-    st.cache_data.clear()
-
-
     conn = psycopg2.connect(
         host=st.secrets["SUPABASE_HOST"],
         database=st.secrets["SUPABASE_DB"],
@@ -67,6 +63,12 @@ if st.button("Reload Data"):
 
 
 df = load_data()
+
+# ✅ RELOAD BUTTON (OUTSIDE FUNCTION)
+if st.button("Reload Data"):
+    st.cache_data.clear()
+    st.rerun()
+
 
 # ======================
 # TABS
