@@ -8,10 +8,6 @@ st.set_page_config(page_title="Telecom AI Dashboard", layout="wide")
 st.title("📡 Telecom Customer 360 — AI Insights")
 
 
-# =========================
-# LOAD DATA FROM SUPABASE
-# =========================
-
 @st.cache_data(ttl=600)
 def load_data():
 
@@ -66,10 +62,6 @@ def load_data():
 
     conn.close()
 
-    # ======================
-    # FIX NUMERIC TYPES
-    # ======================
-
     numeric_cols = [
         "churn_risk_score",
         "sentiment",
@@ -85,13 +77,8 @@ def load_data():
     return df
 
 
-# Load data
 df = load_data()
 
-
-# ======================
-# TABS
-# ======================
 
 tab1, tab2, tab3 = st.tabs([
     "📊 Executive Dashboard",
@@ -99,10 +86,6 @@ tab1, tab2, tab3 = st.tabs([
     "🤖 AI Insights"
 ])
 
-
-# ======================
-# TAB 1 — EXECUTIVE
-# ======================
 
 with tab1:
 
@@ -141,10 +124,6 @@ with tab1:
     st.plotly_chart(fig3, use_container_width=True)
 
 
-# ======================
-# TAB 2 — CUSTOMER 360
-# ======================
-
 with tab2:
 
     st.header("👤 Customer 360 View")
@@ -171,4 +150,68 @@ with tab2:
     st.subheader("Retention Recommendation")
     st.success(customer_data["retention_action"])
 
-    st.subheader("Department
+    st.subheader("Department Handling")
+    st.write(customer_data["department"])
+
+
+with tab3:
+
+    st.header("🤖 AI Insights & Recommendations")
+
+    fig1 = px.pie(
+        df,
+        names="priority",
+        title="Customer Priority Segmentation"
+    )
+
+    st.plotly_chart(fig1, use_container_width=True)
+
+    st.divider()
+
+    fig2 = px.scatter(
+        df,
+        x="sentiment",
+        y="churn_risk_score",
+        color="priority",
+        size="churn_risk_score",
+        title="Churn vs Sentiment Relationship"
+    )
+
+    st.plotly_chart(fig2, use_container_width=True)
+
+    st.divider()
+
+    st.subheader("AI Retention Strategy Generator")
+
+    customer_id_ai = st.selectbox(
+        "Select Customer",
+        df["customer_id"].dropna().unique(),
+        key="ai_customer"
+    )
+
+    customer_data = df[df["customer_id"] == customer_id_ai].iloc[0]
+
+    if st.button("Generate Retention Strategy"):
+
+        churn = customer_data["churn_risk_score"]
+        sentiment = customer_data["sentiment"]
+
+        if churn > 0.75:
+            recommendation = "High churn risk detected. Offer personalized discount and priority support."
+        elif churn > 0.5:
+            recommendation = "Moderate churn risk. Provide proactive engagement and service review."
+        else:
+            recommendation = "Low churn risk. Maintain engagement with loyalty benefits."
+
+        explanation = f"""
+        AI Analysis:
+        - Sentiment Score: {sentiment}
+        - Churn Risk: {churn}
+
+        Recommended Action:
+        {recommendation}
+        """
+
+        st.success(recommendation)
+        st.info(explanation)
+
