@@ -14,12 +14,13 @@ st.title("📡 Telecom Customer 360 — AI Insights")
 @st.cache_data
 def load_data():
     conn = psycopg2.connect(
-        host=st.secrets["SUPABASE_HOST"],
-        database=st.secrets["SUPABASE_DB"],
-        user=st.secrets["SUPABASE_USER"],
-        password=st.secrets["SUPABASE_PASSWORD"],
-        port=st.secrets["SUPABASE_PORT"]
-    )
+    host=st.secrets["SUPABASE_HOST"],
+    database=st.secrets["SUPABASE_DB"],
+    user=st.secrets["SUPABASE_USER"],
+    password=st.secrets["SUPABASE_PASSWORD"],
+    port=st.secrets["SUPABASE_PORT"],
+    sslmode="require"
+)
 
     query = """
     SELECT
