@@ -119,8 +119,6 @@ with tab2:
 # ======================
 
 with tab3:
-    with tab3:
-
     st.header("🤖 AI Insights & Recommendations")
 
     st.subheader("Priority Distribution")
