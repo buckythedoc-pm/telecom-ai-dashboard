@@ -61,8 +61,8 @@ ON usp.user_id = ra.customer_id
 
     """
 
-    df = pd.read_sql(query, conn)
-    # Convert numeric columns safely
+df = pd.read_sql(query, conn)
+
 numeric_cols = [
     "churn_risk_score",
     "sentiment",
@@ -70,6 +70,13 @@ numeric_cols = [
     "avg_confidence",
     "avg_sentiment"
 ]
+
+for col in numeric_cols:
+    if col in df.columns:
+        df[col] = pd.to_numeric(df[col], errors="coerce")
+
+conn.close()
+
 
 for col in numeric_cols:
     if col in df.columns:
