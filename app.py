@@ -24,36 +24,41 @@ def load_data():
 
     query = """
     SELECT
-        usp.user_id AS customer_id,
-        usp.avg_confidence,
-        usp.churn_risk,
-        usp.churn_risk_label,
-        usp.churn_reason,
+    usp.user_id AS customer_id,
+    usp.avg_confidence,
+    usp.avg_sentiment,
+    usp.churn_risk_score,
+    usp.churn_risk_label,
+    usp.churn_reason,
+    usp.total_sessions,
+    usp.unresolved_sessions,
 
-        ra.sentiment,
-        ra.retention_action,
-        ra.priority,
-        ra.department,
-        ra.reason,
-        ra.confidence_score
+    ra.sentiment,
+    ra.retention_action,
+    ra.priority,
+    ra.department,
+    ra.reason,
+    ra.confidence_score,
+    ra.created_at
 
-    FROM user_support_profile usp
+FROM user_support_profile usp
 
-    LEFT JOIN (
-        SELECT DISTINCT ON (customer_id)
-            customer_id,
-            sentiment,
-            retention_action,
-            priority,
-            department,
-            reason,
-            confidence_score,
-            created_at
-        FROM retention_actions
-        ORDER BY customer_id, created_at DESC
-    ) ra
+LEFT JOIN (
+    SELECT DISTINCT ON (customer_id)
+        customer_id,
+        sentiment,
+        retention_action,
+        priority,
+        department,
+        reason,
+        confidence_score,
+        created_at
+    FROM retention_actions
+    ORDER BY customer_id, created_at DESC
+) ra
 
-    ON usp.user_id = ra.customer_id
+ON usp.user_id = ra.customer_id
+
     """
 
     df = pd.read_sql(query, conn)
