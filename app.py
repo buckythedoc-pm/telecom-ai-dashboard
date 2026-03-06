@@ -198,7 +198,7 @@ with tab2:
 
     col1.metric("Churn Risk", round(customer_data["churn_risk_score"], 2))
     col2.metric("Sentiment", round(customer_data["sentiment"], 2))
-   col4.metric("Confidence", round(float(customer_data["confidence_score"]), 2))
+    col4.metric("Confidence", round(float(customer_data["confidence_score"]), 2))
 
     # Priority badge
     priority = str(customer_data["priority"]).lower()
